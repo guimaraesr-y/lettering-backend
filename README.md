@@ -4,7 +4,7 @@ Back-end para a aplicação Lettering, projeto de envio cartas.
 
 ## TODO
 
-- Criar helpers e refatorar
-- Revisar e melhorar o código
-- Escrever testes e checar lógica de negócio
-- Criar um Readme melhor
+- [x] Criar helpers e refatorar
+- [ ] Revisar e melhorar o código
+- [ ] Escrever testes e checar lógica de negócio
+- [ ] Criar um Readme melhor
