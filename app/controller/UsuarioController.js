@@ -1,80 +1,69 @@
-import { compare, encrypt, generateJWT } from "../helper/criptografia.js";
-import models from "../model/models.js";
+import { usuarioHelper } from "../helper/UsuarioHelper.js";
 
-const { Usuario } = models;
-
-/*
-*
-*   TODO: Refatorar código aqui adicionando erros e funções nos helpers
-*
-*/
+const { 
+    getData, 
+    getFriends, 
+    login, 
+    createUsuario, 
+    deleteUsuario 
+} = usuarioHelper;
 
 class UsuarioController {
     async data(req, res) { // fazer cartas antes 
-        let user = await Usuario.findOne({
-            where: {
-                id: req.userData.id
-            }
-        })
-        delete(user.dataValues.password)
-        if(user) res.status(200).json(user)
+        try {
+            const usuario = await getData(req.userData.id);
+            delete(usuario.dataValues.password);
+            if(usuario) res.status(200).json(usuario);
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
+        }
     }
 
-    async friendsData(req, res) {
-
+    async friendsData(req, res) { // falta implementar teste
+        try {
+            let friends = await getFriends(req.userData.id);
+            friends = friends.map(f => ({ id: f.id, username: f.username, createdAt: f.createdAt }));
+            res.status(200).json(friends);
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
+        }
     }
 
     async login(req, res) {
         const { username, password } = req.body;
 
-        const user = await Usuario.findOne({
-            where: {
-                username: username
-            }
-        })
-
-        if(!user) {
-            return res.status(401).json({"ok":false,"error":"usuario nao cadastrado"});
+        try {
+            const token = await login(username, password);
+            res.status(200).json({"ok":true,"token":token});
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }
-        
-        if(compare(password, user.dataValues.password)) {
-            res.status(200).json(
-                { 
-                    "ok": true, 
-                    "token": generateJWT({
-                        id: user.dataValues.id,
-                        username: username,
-                        nome: user.dataValues.nome
-                    }) 
-                }
-            );
-        }
-        else res.status(401).json({"ok":false, "error":"usuario ou senha incorretos"})
     }
 
     async create(req, res) {
         const { username, password, nome } = req.body
-        let user;
+
         try {
-            user = await Usuario.create({
-                username,
-                password: encrypt(password),
-                nome
-            })
-        } catch (e) {
-            user = null;
+            const usuario = await createUsuario(username, password, nome);
+            res.status(201).json(usuario);
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }
-        if(user) res.status(201).json(user);
-        else res.status(401).json({"ok":false, "error":"Erro ao criar usuário"})
     }
 
     async delete(req, res) {
-        Usuario.destroy({
-            where: {
-                id: req.userData.id
-            }
-        })
-        res.status(200).json({ "ok": true })
+        try {
+            await deleteUsuario(req.userData.id);
+            res.status(200).json({ "ok": true })
+        } catch (err) {
+            console.log(err)
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
+        }
     }
 }
 

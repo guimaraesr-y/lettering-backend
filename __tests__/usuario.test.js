@@ -76,7 +76,7 @@ describe("Testando Funções de Usuário", () => {
     })
     
     describe("GET /user/auth/data", () => {
-        it("Should return UNAUTHORIZED erro - without token", async () => {
+        it("Should return an UNAUTHORIZED error - without token", async () => {
             const res = await req.get('/user/auth/data')
             expect(res.status).toBe(401);
         })
@@ -85,6 +85,20 @@ describe("Testando Funções de Usuário", () => {
                 .set("cookie", ["session="+token]);
             expect(res.status).toBe(200);
             expect(typeof(res.body)).toBe("object");
+        })
+    })
+
+    describe("GET /user/auth/friends/data", () => {
+        it("Should return an UNAUTHORIZED error, all the other users, data", async () => {
+            const res = await req.get("/user/auth/friends/data")
+            console.log(res);
+            expect(res.status).toBe(401)
+        })
+        it("Should return user's friends, all the other users, data", async () => {
+            const res = await req.get("/user/auth/friends/data")
+                .set("Cookie", "session="+token);
+            console.log(res);
+            expect(res.status).toBe(200)
         })
     })
 

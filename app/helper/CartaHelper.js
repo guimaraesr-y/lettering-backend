@@ -5,7 +5,7 @@ const { Carta } = models;
 
 class CartaHelper {
 
-    async sendCarta(remetenteId, destinatarioId, texto) {
+    async sendLetter(remetenteId, destinatarioId, texto) {
         if(remetenteId == destinatarioId) throw new APIError("remetente igual destinatario");
         return await Carta.create({
             remetenteId,
@@ -14,6 +14,22 @@ class CartaHelper {
         });
     }
 
+	async getReceived(userId) {
+		return await Carta.findAll({
+            where: {
+                destinatarioId: userId
+            }
+        })
+	}
+
+    async getSent(userId) {
+        return await Carta.findAll({
+            where: {
+                remetenteId: userId,
+            },
+        });
+    }
+
 }
 
-export let cartaHelper = new CartaHelper();
+export const cartaHelper = new CartaHelper();

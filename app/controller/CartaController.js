@@ -1,6 +1,8 @@
 import models from '../model/models.js'
+import { cartaHelper } from '../helper/CartaHelper.js';
 
 const { Carta } = models;
+const { sendLetter, getReceived, getSent } = cartaHelper;
 
 /*
 *
@@ -11,39 +13,34 @@ const { Carta } = models;
 class CartaController {
     async send(req, res) {
         try {
-            const carta = await Carta.create({
-                remetenteId: req.userData.id,
-                destinatarioId: req.params.destinatarioId,
-                texto: req.body.texto
-            });
+            const carta = await sendLetter(
+                req.userData.id, req.params.destinatarioId, req.body.texto
+            )
+            
             res.status(200).json(carta);
-        } catch (e) {
-            if(e.name == 'APIError') res.status(401).json({"ok":false,"error": e.message})
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
             else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }
-        
     }
     
     async getReceived(req, res) {
-        let cartas = await Carta.findAll({
-            where: {
-                destinatarioId: req.userData.id
-            }
-        })
-        res.status(200).json(cartas);
+        try {
+            const cartas = await getReceived(req.userData.id);
+            res.status(200).json(cartas);
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
+        }
     }
     
     async getSent(req, res) {
         try {
-            const cartas = await Carta.findAll({
-                where: {
-                    remetenteId: req.userData.id,
-                },
-            });
+            const cartas = await getSent(req.userData.id);
             res.status(200).json(cartas);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+        } catch (err) {
+            if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
+            else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }
     }
 }
