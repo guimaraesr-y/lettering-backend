@@ -14,7 +14,11 @@ const Usuario = sequelize.define('Usuario', {
     nome: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+	geolocation: {
+		type: DataTypes.STRING,
+		allowNull: false
+	}
 })
 
 export default Usuario

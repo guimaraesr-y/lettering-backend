@@ -5,7 +5,8 @@ import { cartaController } from './app/controller/CartaController.js';
 
 const router = Router()
 
-router.use((req, res, next) => { // verifies jwt token
+// verifica jwt token
+router.use((req, res, next) => { 
     if(req.path.startsWith('/user/auth') || req.path.startsWith('/letter/auth')) {
         var token = req.cookies.session;
         
@@ -25,15 +26,14 @@ router.use((req, res, next) => { // verifies jwt token
 //Routes
 router.get("/", (req, res) => res.status(200).json({"ok": "true"}));
 
-// unauthenticated routes
+// user routes
 router.post("/user/login", usuarioController.login);
 router.post("/user/create", usuarioController.create);
-
-// authenticated routes
 router.get("/user/auth/data", usuarioController.data);
 router.delete("/user/auth/delete", usuarioController.delete)
 router.get("/user/auth/friends/data", usuarioController.friendsData);
 
+// letter routes
 router.post("/letter/auth/send/:destinatarioId", cartaController.send);
 router.get("/letter/auth/sent", cartaController.getSent);
 router.get("/letter/auth/received", cartaController.getReceived);

@@ -14,11 +14,15 @@ class CartaController {
     async send(req, res) {
         try {
             const carta = await sendLetter(
-                req.userData.id, req.params.destinatarioId, req.body.texto
+                req.userData.id, 
+				req.params.destinatarioId, 
+				req.body.texto,
+				req.body.geolocation
             )
             
             res.status(200).json(carta);
         } catch (err) {
+            console.error(err)
             if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
             else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }

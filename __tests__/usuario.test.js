@@ -14,7 +14,8 @@ let token;
 let data = {
     username: "test_user_000",
     password: "test_user_000",
-    nome: "Usuário Teste"
+    nome: "Usuário Teste",
+    geolocation: "-23.8942456 -38.1844021"
 };
 
 describe("Testando Funções de Usuário", () => {
@@ -24,7 +25,8 @@ describe("Testando Funções de Usuário", () => {
         let usuario = await Usuario.create({
             username: data.username,    
             password: encrypt(data.password),
-            nome: data.nome
+            nome: data.nome,
+            geolocation: data.geolocation
         })
         
         token = generateJWT({
@@ -43,7 +45,7 @@ describe("Testando Funções de Usuário", () => {
 
     describe("POST /user/create", () => {
         it("Should return an error - missing paramethers", async () => {
-            let wrongData = { username: "test", password: ""}
+            let wrongData = { username: "test", password: "" }
             const res = await req.post("/user/create").send(wrongData);
             expect(res.status).toBe(401);
         })
@@ -52,7 +54,8 @@ describe("Testando Funções de Usuário", () => {
                 .send({
                     username: "testuser",
                     password: "testuser",
-                    nome: "testando"
+                    nome: "testando",
+                    geolocation: "-20 -40"
                 });
             expect(res.status).toBe(201);
         })
@@ -91,13 +94,11 @@ describe("Testando Funções de Usuário", () => {
     describe("GET /user/auth/friends/data", () => {
         it("Should return an UNAUTHORIZED error, all the other users, data", async () => {
             const res = await req.get("/user/auth/friends/data")
-            console.log(res);
             expect(res.status).toBe(401)
         })
         it("Should return user's friends, all the other users, data", async () => {
             const res = await req.get("/user/auth/friends/data")
                 .set("Cookie", "session="+token);
-            console.log(res);
             expect(res.status).toBe(200)
         })
     })

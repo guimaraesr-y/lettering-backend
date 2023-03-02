@@ -26,16 +26,17 @@ class UsuarioController {
             friends = friends.map(f => ({ id: f.id, username: f.username, createdAt: f.createdAt }));
             res.status(200).json(friends);
         } catch (err) {
+            console.error(err)
             if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
             else res.status(500).json({"ok": false, "error": "Internal Server Error"})
         }
     }
 
     async login(req, res) {
-        const { username, password } = req.body;
+        const { username, password, geolocation } = req.body;
 
         try {
-            const token = await login(username, password);
+            const token = await login(username, password, geolocation);
             res.status(200).json({"ok":true,"token":token});
         } catch (err) {
             if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})
@@ -44,10 +45,10 @@ class UsuarioController {
     }
 
     async create(req, res) {
-        const { username, password, nome } = req.body
+        const { username, password, nome, geolocation } = req.body
 
         try {
-            const usuario = await createUsuario(username, password, nome);
+            const usuario = await createUsuario(username, password, nome, geolocation);
             res.status(201).json(usuario);
         } catch (err) {
             if(err.name == 'APIError') res.status(401).json({"ok":false,"error": err.message})

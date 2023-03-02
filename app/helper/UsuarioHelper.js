@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import APIError from "../error/APIError.js";
 import { compare, encrypt, generateJWT } from "../helper/criptografia.js";
 import models from "../model/models.js";
+import { varyCoordinates } from './distance.js';
 
 const { Usuario } = models;
 
@@ -24,7 +25,7 @@ class UsuarioHelper {
         })
     }
 
-    async login(username, password) {
+    async login(username, password, geolocation) {
         const usuario = await Usuario.findOne({
             where: {
                 username: username
@@ -33,6 +34,10 @@ class UsuarioHelper {
 
         if(!usuario) {
             throw new APIError("usuário não cadastrado");
+        }
+        
+        if(geolocation) {
+            this.setGeolocation(usuario.dataValues.id, geolocation)
         }
         
         if(compare(password, usuario.dataValues.password)) {
@@ -46,20 +51,41 @@ class UsuarioHelper {
         }
     }
 
-    async createUsuario(username, password, nome) {
-        if(!username || !password || !nome) {
+    async createUsuario(username, password, nome, geolocation) {
+        if(!username || !password || !nome || !geolocation) {
             throw new APIError("os campos não podem ser vazios");
         }
 
         return await Usuario.create({
             username,
             password: encrypt(password),
-            nome
+            nome,
+            geolocation
         })
     }
 
     async deleteUsuario(userId) {
         return await Usuario.destroy({
+            where: {
+                id: userId
+            }
+        })
+    }
+
+    async setGeolocation(userId, geolocation) {
+        geolocation = varyCoordinates(geolocation);
+
+        return await Usuario.update({
+            geolocation
+        }, {
+            where: {
+                id: userId
+            }
+        })
+    }
+
+    async findUserById(userId) {
+        return await Usuario.findOne({
             where: {
                 id: userId
             }
