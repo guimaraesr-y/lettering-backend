@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 import { router } from "./router.js";
 
 export class App {
@@ -10,6 +11,7 @@ export class App {
     }
     
     middleware(){
+        this.server.use(cors());
         this.server.use(express.json());
         this.server.use(express.urlencoded({ extended: true }))
         this.server.use(cookieParser());

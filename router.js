@@ -8,7 +8,7 @@ const router = Router()
 // verifica jwt token
 router.use((req, res, next) => { 
     if(req.path.startsWith('/user/auth') || req.path.startsWith('/letter/auth')) {
-        var token = req.cookies.session;
+        var token = req.headers.authorization;
         
         if (!token) return res.status(401).send({ auth: false, message: 'missing token' });
         
