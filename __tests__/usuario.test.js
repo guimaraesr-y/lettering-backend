@@ -85,7 +85,7 @@ describe("Testando Funções de Usuário", () => {
         })
         it("Should return user's data", async () => {
             const res = await req.get('/user/auth/data')
-                .set("cookie", ["session="+token]);
+                .set("authorization", token);
             expect(res.status).toBe(200);
             expect(typeof(res.body)).toBe("object");
         })
@@ -98,7 +98,7 @@ describe("Testando Funções de Usuário", () => {
         })
         it("Should return user's friends, all the other users, data", async () => {
             const res = await req.get("/user/auth/friends/data")
-                .set("Cookie", "session="+token);
+                .set("authorization", token);
             expect(res.status).toBe(200)
         })
     })
@@ -109,7 +109,7 @@ describe("Testando Funções de Usuário", () => {
 
         it("Should delete the test user", async () => {
             const res = await req.delete("/user/auth/delete")
-                .set("cookie", ["session="+token])
+                .set("authorization", token)
             expect(res.status).toBe(200);
         })
     })

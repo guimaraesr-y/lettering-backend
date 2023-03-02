@@ -61,14 +61,14 @@ describe("Testando funções das Cartas", () => {
             let res = await req.post("/letter/auth/send/"+u1.id)
                 .send(letter)
                 .set("content-type", "application/json")
-                .set('Cookie', 'session='+token1)
+                .set('authorization', token1)
             expect(res.status).toBe(401);
         })
         it("Should send a letter to another user", async () => {
             let res = await req.post("/letter/auth/send/"+u1.id)
                 .send(letter)
                 .set("content-type", "application/json")
-                .set('Cookie', 'session='+token0)
+                .set('authorization', token0)
             expect(res.status).toBe(200);
         })
     })
@@ -76,7 +76,7 @@ describe("Testando funções das Cartas", () => {
     describe("GET /letter/auth/received", () => {
         it("Should get all the received letters", async() => {
             let res = await req.get("/letter/auth/received")
-                .set("Cookie", "session="+token1)
+                .set("authorization", token1)
             expect(res.status).toBe(200)
         })
     })
@@ -84,8 +84,7 @@ describe("Testando funções das Cartas", () => {
     describe("GET /letter/auth/sent", () => {
         it("Should get all the sent letters", async () => {
             let res = await req.get("/letter/auth/sent")
-                .set("Cookie", "session="+token0)
-            console.log(res);
+                .set("authorization", token0)
             expect(res.status).toBe(200)
         })
     })
