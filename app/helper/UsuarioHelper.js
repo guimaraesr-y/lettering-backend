@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import APIError from "../error/APIError.js";
 import { compare, encrypt, generateJWT } from "../helper/criptografia.js";
 import models from "../model/models.js";
-import { varyCoordinates } from './distance.js';
+import { varyCoordinates, getDistanceBetweenPoints } from './distance.js';
 
 const { Usuario } = models;
 
@@ -18,11 +18,24 @@ class UsuarioHelper {
     }
 
     async getFriends(userId) {
-        return await Usuario.findAll({
+        let usuario = await Usuario.findOne({
+            where: {
+                id: userId
+            }
+        })
+        let friends = await Usuario.findAll({
             where: {
                 id : { [Op.ne]: userId }
             }
         })
+        return friends.map(friend => ({ 
+            id: friend.id, 
+            username: friend.username,
+            nome: friend.nome,
+            geolocation: friend.geolocation,
+            distance: getDistanceBetweenPoints(usuario.geolocation, friend.geolocation),
+            createdAt: friend.createdAt
+        }))
     }
 
     async login(username, password, geolocation) {

@@ -23,7 +23,6 @@ class UsuarioController {
     async friendsData(req, res) { // falta implementar teste
         try {
             let friends = await getFriends(req.userData.id);
-            friends = friends.map(f => ({ id: f.id, username: f.username, createdAt: f.createdAt }));
             res.status(200).json(friends);
         } catch (err) {
             console.error(err)
