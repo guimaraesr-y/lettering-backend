@@ -9,7 +9,11 @@ const Carta = sequelize.define('Carta', {
 	receiveTime: {
 		type: DataTypes.DATE,
 		allowNull: false
-	}
+	},
+    opened: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 })
 
 export default Carta
